@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -13,6 +14,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
+#include <vector>
 
 using namespace std;
 
@@ -21,7 +23,8 @@ using namespace std;
 #define MAX_LINE 256
 
 int parseCommand(char *command);
-const char* getMessage();
+const char* getMessage(vector<const char*>*);
+vector<const char*> loadMessages(const char*);
 
 int main(int argc, char **argv) {
 
@@ -32,6 +35,7 @@ int main(int argc, char **argv) {
     int len;
     int s;
     int new_s;
+    vector<const char*> messages = loadMessages("messages.txt");
 
     /* build address data structure */
     bzero((char *)&sin, sizeof(sin));
@@ -80,7 +84,7 @@ int main(int argc, char **argv) {
 			switch(command)
 			{
 				case 0:
-					strcat(returnMessage, getMessage());
+					strcat(returnMessage, getMessage(&messages));
 					break;
 				case 1:
 					break;
@@ -121,8 +125,34 @@ int parseCommand(char *command){
 	return -1;
 }
 
-const char* getMessage()
+const char* getMessage(vector<const char*> *messages)
 {
-	cout << "Displaying Message" << endl;
-	return "This is a message\n";
+	const char* message = messages->data()[1];
+	cout << "Displaying Message " << messages->size() << message << endl;
+	return message;
+}
+
+vector<const char*> loadMessages(const char *fileName)
+{
+	string line;
+	const char* lineCopy;
+
+	vector<const char*> messages;
+	ifstream myFile(fileName);
+
+	if (myFile.is_open())
+	{
+		while(getline(myFile, line))
+		{
+			messages.push_back(line.c_str());
+		}
+
+		myFile.close();
+	}
+	else
+	{
+		cout << "Error Loading Messages!" << endl;
+	}
+
+	return messages;
 }
