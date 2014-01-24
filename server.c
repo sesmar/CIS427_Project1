@@ -23,8 +23,8 @@ using namespace std;
 #define MAX_LINE 256
 
 int parseCommand(char *command);
-const char* getMessage(vector<const char*>*);
-vector<const char*> loadMessages(const char*);
+const char* getMessage(vector<string>);
+vector<string> loadMessages(const char*);
 
 int main(int argc, char **argv) {
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     int len;
     int s;
     int new_s;
-    vector<const char*> messages = loadMessages("messages.txt");
+    vector<string> messages = loadMessages("messages.txt");
 
     /* build address data structure */
     bzero((char *)&sin, sizeof(sin));
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 			switch(command)
 			{
 				case 0:
-					strcat(returnMessage, getMessage(&messages));
+					strcat(returnMessage, getMessage(messages));
 					break;
 				case 1:
 					break;
@@ -125,26 +125,24 @@ int parseCommand(char *command){
 	return -1;
 }
 
-const char* getMessage(vector<const char*> *messages)
+const char* getMessage(vector<string> messages)
 {
-	const char* message = messages->data()[1];
-	cout << "Displaying Message " << messages->size() << message << endl;
+	const char* message = strcat(messages[0], "\n");
+	cout << "Displaying Message " << message << endl;
 	return message;
 }
 
-vector<const char*> loadMessages(const char *fileName)
+vector<string> loadMessages(const char *fileName)
 {
 	string line;
-	const char* lineCopy;
-
-	vector<const char*> messages;
+	vector<string> messages;
 	ifstream myFile(fileName);
 
 	if (myFile.is_open())
 	{
 		while(getline(myFile, line))
 		{
-			messages.push_back(line.c_str());
+			messages.push_back(line);
 		}
 
 		myFile.close();
