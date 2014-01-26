@@ -17,4 +17,5 @@ class MessageManager
 		MessageManager();
 		void load(const char *fileName);
 		const char* getNext();
+		void store(const char *message);
 };

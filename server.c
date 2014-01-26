@@ -67,7 +67,6 @@ int main(int argc, char **argv) {
 			exit(1);
 		}
 
-		//send (new_s, "200 OK\n", 8, 0);
 		cout << "new connection from " << inet_ntoa(sin.sin_addr) << endl;
 	
 		while (len = recv(new_s, buf, sizeof(buf), 0)) {
@@ -88,7 +87,17 @@ int main(int argc, char **argv) {
 					strcat(returnMessage, messageManager.getNext());
 					break;
 				case MSGSTORE:
+					if (commandProcessor.last_command == UNKNOWN)
+					{
+						messageManager.store(buf);
+					}
+				
+					break;
 				case LOGIN:
+				case LOGOUT:
+				case SHUTDOWN:
+				case QUIT:
+					strcat(returnMessage, "NOT IMPLEMENTED\n");
 				default:
 					break;
 			}

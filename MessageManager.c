@@ -45,3 +45,8 @@ void MessageManager::load(const char* fileName)
 		cout << "Error loading messages from file!" << endl;
 	}
 }
+
+void MessageManager::store(const char *message)
+{
+	messages.push_back(message);
+}

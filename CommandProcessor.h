@@ -12,6 +12,7 @@ enum CommandKind
 class CommandProcessor
 {
 	public:
+		CommandKind last_command;
 		CommandProcessor();
 		CommandKind parse(const char *command);
 };
