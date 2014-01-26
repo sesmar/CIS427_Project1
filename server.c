@@ -15,16 +15,14 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <vector>
+#include "MessageManager.h"
+#include "CommandProcessor.h"
 
 using namespace std;
 
 #define SERVER_PORT 5432
 #define MAX_PENDING 5
 #define MAX_LINE 256
-
-int parseCommand(char *command);
-const char* getMessage(vector<string>);
-vector<string> loadMessages(const char*);
 
 int main(int argc, char **argv) {
 
@@ -35,7 +33,10 @@ int main(int argc, char **argv) {
     int len;
     int s;
     int new_s;
-    vector<string> messages = loadMessages("messages.txt");
+    MessageManager messageManager;
+    CommandProcessor commandProcessor;
+
+    messageManager.load("messages.txt");
 
     /* build address data structure */
     bzero((char *)&sin, sizeof(sin));
@@ -70,9 +71,9 @@ int main(int argc, char **argv) {
 		cout << "new connection from " << inet_ntoa(sin.sin_addr) << endl;
 	
 		while (len = recv(new_s, buf, sizeof(buf), 0)) {
-			int command = parseCommand(buf);
+			CommandKind command = commandProcessor.parse(buf);
 			
-			if (command >= 0)
+			if (command != UNKNOWN)
 			{
 				strcpy(returnMessage, "200 OK\n");
 			}
@@ -83,13 +84,11 @@ int main(int argc, char **argv) {
 
 			switch(command)
 			{
-				case 0:
-					strcat(returnMessage, getMessage(messages));
+				case MSGGET:
+					strcat(returnMessage, messageManager.getNext());
 					break;
-				case 1:
-					break;
-				case 2:
-					break;
+				case MSGSTORE:
+				case LOGIN:
 				default:
 					break;
 			}
@@ -101,56 +100,3 @@ int main(int argc, char **argv) {
 		close(new_s);
     }
 } 
-
-int parseCommand(char *command){
-	if (strcmp(command, "MSGGET\n") == 0){
-		return 0;
-	}
-	else if (strcmp(command, "MSGSTORE\n") == 0){
-		return 1;
-	}
-	else if (strcmp(command, "LOGIN\n") == 0){
-		return 2;
-	}
-	else if (strcmp(command, "LOGOUT\n") == 0){
-		return 3;
-	}
-	else if (strcmp(command, "SHUTDOWN\n") == 0){
-		return 4;
-	}
-	else if (strcmp(command, "QUIT\n") == 0){
-		return 5;
-	}
-
-	return -1;
-}
-
-const char* getMessage(vector<string> messages)
-{
-	const char* message = strcat(messages[0], "\n");
-	cout << "Displaying Message " << message << endl;
-	return message;
-}
-
-vector<string> loadMessages(const char *fileName)
-{
-	string line;
-	vector<string> messages;
-	ifstream myFile(fileName);
-
-	if (myFile.is_open())
-	{
-		while(getline(myFile, line))
-		{
-			messages.push_back(line);
-		}
-
-		myFile.close();
-	}
-	else
-	{
-		cout << "Error Loading Messages!" << endl;
-	}
-
-	return messages;
-}

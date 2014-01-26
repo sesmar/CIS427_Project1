@@ -8,8 +8,10 @@ all: client server
 client: client.o 
 	$(CC) $(LDFLAGS) -o client client.o
  
-server: server.o
-	$(CC) $(LDFLAGS) -o server server.o
+server: server.o MessageManager.o CommandProcessor.o
+	$(CC) $(LDFLAGS) -o server MessageManager.o CommandProcessor.o server.o
+
+server.o: MessageManager.o
 
 # To make an object from source
 .c.o:
