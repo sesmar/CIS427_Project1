@@ -16,9 +16,11 @@ class UserManager
 {
 	private:
 		User current_user;
+		bool logged_in;
 	public:
 		UserManager();
 		bool login(const char* userName, const char* password);
 		void logout(const char* userName);
 		User getUser();
+		bool loggedIn();
 };

@@ -26,7 +26,9 @@ bool User::IsInRole(const char* role)
 
 UserManager::UserManager() 
 {
-	//this->current_user();
+	User user("", "");
+	this->current_user = user;
+	this->logged_in = false;
 }
 
 bool UserManager::login(const char* userName, const char* password)
@@ -45,6 +47,7 @@ bool UserManager::login(const char* userName, const char* password)
 					const char* permissions = line.substr(line.find_last_of(" ") + 1, string::npos).c_str(); 
 					User user(userName, permissions);
 					this->current_user = user;
+					this->logged_in = true;
 					return true;
 				}
 			}
@@ -60,10 +63,17 @@ bool UserManager::login(const char* userName, const char* password)
 
 void UserManager::logout(const char*)
 {
-	//this->current_user = NULL;
+	User user("", "");
+	this->current_user = user;
+	this->logged_in = false;
 }
 
 User UserManager::getUser()
 {
 	return this->current_user;
+}
+
+bool UserManager::loggedIn()
+{
+	return this->logged_in;
 }

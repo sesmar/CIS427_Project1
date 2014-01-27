@@ -89,7 +89,19 @@ int main(int argc, char **argv) {
 					strcat(returnMessage, messageManager.getNext());
 					break;
 				case MSGSTORE:
-					if (commandProcessor.last_command == UNKNOWN)
+					if (!userManager.loggedIn())
+					{
+						switch(commandProcessor.last_command)
+						{
+							case MSGSTORE:
+								strcpy(returnMessage, "401 You are not currently logged in, login first.\n");
+								break;
+							case UNKNOWN:
+								strcpy(returnMessage, "INVALID COMMAND\n");
+								break;
+						}
+					}
+					else if (commandProcessor.last_command == UNKNOWN)
 					{
 						messageManager.store(buf);
 					}
@@ -102,6 +114,8 @@ int main(int argc, char **argv) {
 					}
 					break;
 				case LOGOUT:
+					userManager.logout(userManager.getUser().UserName.c_str());
+					break;
 				case SHUTDOWN:
 				case QUIT:
 					strcat(returnMessage, "NOT IMPLEMENTED\n");
