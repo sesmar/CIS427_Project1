@@ -17,6 +17,7 @@
 #include <vector>
 #include "MessageManager.h"
 #include "CommandProcessor.h"
+#include "UserManager.h"
 
 using namespace std;
 
@@ -35,6 +36,7 @@ int main(int argc, char **argv) {
     int new_s;
     MessageManager messageManager;
     CommandProcessor commandProcessor;
+    UserManager userManager;
 
     messageManager.load("messages.txt");
 
@@ -94,6 +96,11 @@ int main(int argc, char **argv) {
 				
 					break;
 				case LOGIN:
+					if (!userManager.login(commandProcessor.parameters[0].c_str(), commandProcessor.parameters[1].c_str()))
+					{
+						strcpy(returnMessage, "401 Wrong UserID or Password\n");
+					}
+					break;
 				case LOGOUT:
 				case SHUTDOWN:
 				case QUIT:

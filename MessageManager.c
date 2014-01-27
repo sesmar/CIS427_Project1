@@ -1,8 +1,6 @@
-#include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include <vector>
 #include "MessageManager.h"
 
 MessageManager::MessageManager()
@@ -25,6 +23,8 @@ const char* MessageManager::getNext()
 
 void MessageManager::load(const char* fileName)
 {
+	this->file_name.clear();
+	this->file_name.append(fileName);
 	string line;
 	ifstream infile(fileName);
 
@@ -48,5 +48,14 @@ void MessageManager::load(const char* fileName)
 
 void MessageManager::store(const char *message)
 {
-	messages.push_back(message);
+	ofstream outfile;
+	outfile.open(this->file_name.c_str());
+	this->messages.push_back(message);
+
+	for(int i = 0; i < this->messages.size(); i++)
+	{
+		outfile << this->messages[i];
+	}
+
+	outfile.close();
 }

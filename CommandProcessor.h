@@ -1,3 +1,7 @@
+#include <vector>
+
+using namespace std;
+
 enum CommandKind
 {
 	UNKNOWN = -1,
@@ -15,4 +19,5 @@ class CommandProcessor
 		CommandKind last_command;
 		CommandProcessor();
 		CommandKind parse(const char *command);
+		vector<string> parameters;
 };

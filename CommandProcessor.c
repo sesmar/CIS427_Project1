@@ -1,3 +1,5 @@
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include "CommandProcessor.h"
 
@@ -18,9 +20,18 @@ CommandKind CommandProcessor::parse(const char *command)
 		last_command = MSGSTORE;
 		return MSGSTORE;
 	}
-	else if (strcmp(command, "LOGIN\n") == 0)
+	else if (strncmp(command, "LOGIN", 5) == 0)
 	{
 		last_command = LOGIN;
+		string c(command);
+		//Parse username and password as parameters
+		int start = c.find(" ") + 1;
+		int end = c.find_last_of(" ");
+
+		//add them to the parameters vector
+		parameters.push_back(c.substr(start, (end - start)));
+		parameters.push_back(c.substr(end + 1, (c.length() - end) - 2));
+
 		return LOGIN;
 	}
 	else if (strcmp(command, "LOGOUT\n") == 0)
