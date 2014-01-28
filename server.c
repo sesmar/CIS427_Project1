@@ -114,7 +114,10 @@ int main(int argc, char **argv) {
 					}
 					break;
 				case LOGOUT:
-					userManager.logout(userManager.getUser().UserName.c_str());
+					if (userManager.loggedIn())
+					{
+						userManager.logout(userManager.getUser().UserName.c_str());
+					}
 					break;
 				case SHUTDOWN:
 					if (userManager.loggedIn())
@@ -133,6 +136,10 @@ int main(int argc, char **argv) {
 					strcat(returnMessage, "402 User not allowed to execute this command\n");
 					break;
 				case QUIT:
+					if (userManager.loggedIn())
+					{
+						userManager.logout(userManager.getUser().UserName.c_str());
+					}
 					break;
 				default:
 					break;
