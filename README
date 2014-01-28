@@ -1,0 +1,27 @@
+CIS 427 Project 1
+Christopher M. Sims
+
+Implemented Functions/Commands
+MSGGET		//C.M.S.
+MSGSTORE	//C.M.S.
+LOGIN		//C.M.S.
+LOGOUT		//C.M.S.
+QUIT		//C.M.S.
+SHUTDOWN	//C.M.S.
+
+Files:
+server.c	//Server Implementation
+client.c	//Client Implementation
+CommandProcessor.h	//Manages parsing and tracking commands
+CommandProcessor.c	
+MessageManager.h	//Manages loading and storing messages
+MessageManager.c
+UserManager.h		//Manages users and login/logout
+UserManager.c
+messages.txt		//Massages file
+users.txt		//Users file with username, password, and permissions.
+
+Known Bugs:
+
+
+Sample Output:
