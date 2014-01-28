@@ -21,7 +21,7 @@
 
 using namespace std;
 
-#define SERVER_PORT 5432
+#define SERVER_PORT 34352
 #define MAX_PENDING 5
 #define MAX_LINE 256
 
