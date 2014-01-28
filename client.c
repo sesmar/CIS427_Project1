@@ -58,7 +58,21 @@ int main(int argc, char * argv[]) {
 		len = strlen(buf) + 1;
 		send (s, buf, len, 0);
 		recv (s, rbuf, sizeof(rbuf), 0);
+
 		cout << "s: " << rbuf;
+
+		string command(buf);
+		string output(rbuf);
+
+		if ((command == "SHUTDOWN\n"
+			|| command == "QUIT\n")
+			&& output == "200 OK\n")
+		{
+			close(s);
+			return 0;
+		}
+
+
 		cout << "c: ";
     }
 

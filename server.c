@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 				case MSGSTORE:
 					if (!userManager.loggedIn())
 					{
-						switch(commandProcessor.last_command)
+					switch(commandProcessor.last_command)
 						{
 							case MSGSTORE:
 								strcpy(returnMessage, "401 You are not currently logged in, login first.\n");
@@ -117,8 +117,23 @@ int main(int argc, char **argv) {
 					userManager.logout(userManager.getUser().UserName.c_str());
 					break;
 				case SHUTDOWN:
+					if (userManager.loggedIn())
+					{
+						User currentUser = userManager.getUser();
+
+						if (currentUser.IsInRole("root"))
+						{
+							send(new_s, returnMessage, strlen(returnMessage) + 1, 0);
+							cout << buf;
+							close(new_s);
+							return 0;
+						}
+					}
+
+					strcat(returnMessage, "402 User not allowed to execute this command\n");
+					break;
 				case QUIT:
-					strcat(returnMessage, "NOT IMPLEMENTED\n");
+					break;
 				default:
 					break;
 			}
