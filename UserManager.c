@@ -7,27 +7,30 @@ User::User() {}
 
 User::User(const char* user_name, const char* permission_string)
 {
-    this->UserName.clear();
-    this->UserName.append(user_name);
-    this->permissions.clear();
-    this->permissions.append(permission_string);
+    this->UserName = new string(user_name);
+    this->permissions = new string(permission_string);
     this->socket_number = -1;
+}
+
+User::~User()
+{
+	delete UserName;
+	delete permissions;
 }
 
 bool User::IsInRole(const char* role)
 {
-    if (strstr(this->permissions.c_str(), role) != NULL)
+    if (strstr(this->permissions->c_str(), role) != NULL)
     {
 	return true;
     }
 
-    return false;
+	return false;
 }
 
 UserManager::UserManager() 
 {
-    User user("", "");
-    this->current_user = user;
+    this->current_user = new User("", "");
     this->logged_in = false;
 }
 
@@ -42,11 +45,15 @@ bool UserManager::login(const char* userName, const char* password)
 		{
 			if (line.find(userName) != -1)
 			{
-				if (line.find(password) != -1)
+				int start = line.find(" ") + 1;
+				int end = line.find_last_of(" ");
+
+				string linePassword(line.substr(start, end-start));
+
+				if (linePassword == password)
 				{
 					const char* permissions = line.substr(line.find_last_of(" ") + 1, string::npos).c_str(); 
-					User user(userName, permissions);
-					this->current_user = user;
+					this->current_user =  new User(userName, permissions);
 					this->logged_in = true;
 					return true;
 				}
@@ -63,12 +70,11 @@ bool UserManager::login(const char* userName, const char* password)
 
 void UserManager::logout(const char*)
 {
-	User user("", "");
-	this->current_user = user;
+	delete this->current_user;
 	this->logged_in = false;
 }
 
-User UserManager::getUser()
+User* UserManager::getUser()
 {
 	return this->current_user;
 }

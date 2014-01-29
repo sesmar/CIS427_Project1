@@ -116,15 +116,15 @@ int main(int argc, char **argv) {
 				case LOGOUT:
 					if (userManager.loggedIn())
 					{
-						userManager.logout(userManager.getUser().UserName.c_str());
+						userManager.logout(userManager.getUser()->UserName->c_str());
 					}
 					break;
 				case SHUTDOWN:
 					if (userManager.loggedIn())
 					{
-						User currentUser = userManager.getUser();
+						User *currentUser = userManager.getUser();
 
-						if (currentUser.IsInRole("root"))
+						if (currentUser->IsInRole("root"))
 						{
 							send(new_s, returnMessage, strlen(returnMessage) + 1, 0);
 							cout << buf;
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 				case QUIT:
 					if (userManager.loggedIn())
 					{
-						userManager.logout(userManager.getUser().UserName.c_str());
+						userManager.logout(userManager.getUser()->UserName->c_str());
 					}
 					break;
 				default:

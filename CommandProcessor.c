@@ -10,6 +10,8 @@ CommandProcessor::CommandProcessor()
 
 CommandKind CommandProcessor::parse(const char *command)
 {
+	parameters.clear();
+
 	if (strcmp(command, "MSGGET\n") == 0)
 	{
 		last_command = MSGGET;

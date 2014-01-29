@@ -19,4 +19,4 @@ server.o: MessageManager.o
 
 # clean out the dross
 clean:
-	-rm client server *.o core
+	-rm client server *.o
