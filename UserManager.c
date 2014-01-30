@@ -15,8 +15,9 @@ User::User() {}
 ///
 User::User(const char* user_name, const char* permission_string)
 {
-    this->UserName = new string(user_name);
+    
     this->permissions = new string(permission_string);
+	this->UserName = new string(user_name);
     this->socket_number = -1;
 }
 
