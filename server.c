@@ -34,10 +34,12 @@ int main(int argc, char **argv) {
     int len;
     int s;
     int new_s;
-    MessageManager messageManager;
+    //Dependencies for off loading work.
+	MessageManager messageManager;
     CommandProcessor commandProcessor;
     UserManager userManager;
 
+	//load the message from file.
     messageManager.load("messages.txt");
 
     /* build address data structure */
@@ -72,8 +74,10 @@ int main(int argc, char **argv) {
 		cout << "new connection from " << inet_ntoa(sin.sin_addr) << endl;
 	
 		while (len = recv(new_s, buf, sizeof(buf), 0)) {
+			//Parse the command.
 			CommandKind command = commandProcessor.parse(buf);
 			
+			//If valid command set default message to 200 OK
 			if (command != UNKNOWN)
 			{
 				strcpy(returnMessage, "200 OK\n");
@@ -89,9 +93,12 @@ int main(int argc, char **argv) {
 					strcat(returnMessage, messageManager.getNext());
 					break;
 				case MSGSTORE:
+					//Check is user is logged in
 					if (!userManager.loggedIn())
 					{
-					switch(commandProcessor.last_command)
+						//if not logged in
+						//Check the last command to set appropriate message
+						switch(commandProcessor.last_command)
 						{
 							case MSGSTORE:
 								strcpy(returnMessage, "401 You are not currently logged in, login first.\n");
@@ -101,6 +108,7 @@ int main(int argc, char **argv) {
 								break;
 						}
 					}
+					//If is logged in, store the message.
 					else if (commandProcessor.last_command == UNKNOWN)
 					{
 						messageManager.store(buf);
@@ -108,24 +116,29 @@ int main(int argc, char **argv) {
 				
 					break;
 				case LOGIN:
+					//Grab the username/password and log the user in.
 					if (!userManager.login(commandProcessor.parameters[0].c_str(), commandProcessor.parameters[1].c_str()))
 					{
 						strcpy(returnMessage, "401 Wrong UserID or Password\n");
 					}
 					break;
 				case LOGOUT:
+					//If the user is logged in, log them out.
 					if (userManager.loggedIn())
 					{
 						userManager.logout(userManager.getUser()->UserName->c_str());
 					}
 					break;
 				case SHUTDOWN:
+					//Check if the user is logged in.
 					if (userManager.loggedIn())
 					{
 						User *currentUser = userManager.getUser();
 
+						//If the user is logged in, check for root permission.
 						if (currentUser->IsInRole("root"))
 						{
+							///Shutdown the socket and exit program.
 							send(new_s, returnMessage, strlen(returnMessage) + 1, 0);
 							cout << buf;
 							close(new_s);
@@ -136,6 +149,7 @@ int main(int argc, char **argv) {
 					strcpy(returnMessage, "402 User not allowed to execute this command\n");
 					break;
 				case QUIT:
+					//If user is logged inm log them out and return 200 OK
 					if (userManager.loggedIn())
 					{
 						userManager.logout(userManager.getUser()->UserName->c_str());
@@ -145,6 +159,7 @@ int main(int argc, char **argv) {
 					break;
 			}
 
+			//Send response to the client.
 			send(new_s, returnMessage, strlen(returnMessage) + 1, 0);
 			cout << buf;
 		}

@@ -64,6 +64,8 @@ int main(int argc, char * argv[]) {
 		string command(buf);
 		string output(rbuf);
 
+		//if the command was SHUTDOWN or QUIT
+		//and Response was 200 OK then exit program.
 		if ((command == "SHUTDOWN\n"
 			|| command == "QUIT\n")
 			&& output == "200 OK\n")

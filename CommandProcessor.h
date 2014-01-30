@@ -13,6 +13,9 @@ enum CommandKind
 	QUIT = 5,
 };
 
+///
+//CommandProcessor class, used to parse user commands.
+///
 class CommandProcessor
 {
 	public:

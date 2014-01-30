@@ -1,5 +1,8 @@
 using namespace std;
 
+///
+//User class for storing user information
+///
 class User
 {
 	private:
@@ -13,6 +16,9 @@ class User
 		bool IsInRole(const char* role);
 };
 
+///
+//Manages user login and logout.
+///
 class UserManager
 {
 	private:

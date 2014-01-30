@@ -3,13 +3,23 @@
 #include <string.h>
 #include "CommandProcessor.h"
 
+///
+//Constructor for CommandProcessor
+///
 CommandProcessor::CommandProcessor() 
 {
 	last_command = UNKNOWN;
 }
 
+///
+//Parses the given command
+///
+//Parameter: command, the inputed command.
+//Output: CommandKind, enumeration for the allowable commands.
+///
 CommandKind CommandProcessor::parse(const char *command)
 {
+	//clear the parameters from prior command
 	parameters.clear();
 
 	if (strcmp(command, "MSGGET\n") == 0)
@@ -53,11 +63,16 @@ CommandKind CommandProcessor::parse(const char *command)
 	}
 	else if (last_command == MSGSTORE)
 	{
+		//if last command was MSGSTORE and new command is not 
+		//one of the six known commands, assume this is the
+		//message to be stored, set last command to UNKNOWN
+		//and return MSGSTORE
 		last_command = UNKNOWN;
 		return MSGSTORE;
 	}
 	else
 	{
+		//No known command, return UNKNOWN
 		return UNKNOWN;
 	}
 }
