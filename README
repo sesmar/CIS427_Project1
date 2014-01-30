@@ -25,3 +25,35 @@ Known Bugs:
 
 
 Sample Output:
+RUN 01
+c: MSGGET
+s: 200 OK
+This is the first message.
+c: MSGGET
+s: 200 OK
+This is the second message.
+c: MSGSTORE
+s: 401 You are not currently logged in, login first.
+c: SHUTDOWN
+s: 402 User not allowed to execute this command
+c: LOGIN john john01
+s: 200 OK
+c: SHUTDOWN
+s: 402 User not allowed to execute this command
+c: LOGOUT
+s: 200 OK
+c: QUIT
+s: 200 OK
+
+RUN 02
+: 200 OK
+This is the third message.
+c: LOGIN root root01
+s: 200 OK
+c: MSGSTORE
+s: 200 OK
+c: This is the seventh message.
+s: 200 OK
+c: SHUTDOWN
+s: 200 OK
+

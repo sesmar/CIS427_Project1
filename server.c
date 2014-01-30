@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
 						}
 					}
 
-					strcat(returnMessage, "402 User not allowed to execute this command\n");
+					strcpy(returnMessage, "402 User not allowed to execute this command\n");
 					break;
 				case QUIT:
 					if (userManager.loggedIn())

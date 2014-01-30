@@ -1,2 +1,5 @@
 root root01 root
 john john01 user
+david david01 user
+mary mary01 user
+csims csims01 root
