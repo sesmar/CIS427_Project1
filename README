@@ -8,6 +8,8 @@ LOGIN		//C.M.S.
 LOGOUT		//C.M.S.
 QUIT		//C.M.S.
 SHUTDOWN	//C.M.S.
+WHO		//C.M.S.
+SEND		//C.M.S.
 
 Files:
 server.c	//Server Implementation
