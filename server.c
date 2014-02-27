@@ -18,60 +18,75 @@
 #include "MessageManager.h"
 #include "CommandProcessor.h"
 #include "UserManager.h"
+#include "ServerThread.h"
 
 using namespace std;
 
 #define SERVER_PORT 34352
-#define MAX_PENDING 5
+#define MAX_PENDING 10
 #define MAX_LINE 256
+
+//Master file descriptor
+fd_set master;
 
 int main(int argc, char **argv) {
 
-    struct sockaddr_in sin;
+    struct sockaddr_in remoteAddress;
+	struct sockaddr_in myAddress;
+	int newFD;
+	int yes=1;
     socklen_t addrlen;
     char buf[MAX_LINE];
     char returnMessage[MAX_LINE];
     int len;
-    int s;
+    int listener;
     int new_s;
     //Dependencies for off loading work.
 	MessageManager messageManager;
     CommandProcessor commandProcessor;
     UserManager userManager;
+	ServerThread serverThread;
+
+	serverThread.start(SERVER_PORT, MAX_PENDING);
 
 	//load the message from file.
     messageManager.load("messages.txt");
 
     /* build address data structure */
-    bzero((char *)&sin, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = INADDR_ANY;
-    sin.sin_port = htons (SERVER_PORT);
+    //bzero((char *)&myAddress, sizeof(myAddress));
+    myAddress.sin_family = AF_INET;
+    myAddress.sin_addr.s_addr = INADDR_ANY;
+    myAddress.sin_port = htons (SERVER_PORT);
+	memset(&(myAddress.sin_zero), '\0', 8);
 
     /* setup passive open */
-    if (( s = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
+    if ((listener = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("socket");
 		exit(1);
     }
 
-    if ((bind(s, (struct sockaddr *) &sin, sizeof(sin))) < 0) {
+    if ((bind(listener, (struct sockaddr *) &myAddress, sizeof(myAddress))) < 0) {
 		perror("bind");
 		exit(1);
     }
 
-    listen (s, MAX_PENDING);
+	//Set up listener
+    if (listen (listener, MAX_PENDING) < 0){
+		perror("bind");
+		exit(1);
+	}
 
-    addrlen = sizeof(sin);
+    addrlen = sizeof(myAddress);
     cout << "The server is up, waiting for connection" << endl;
 
     /* wait for connection, then receive and print text */
     while (1) {
-		if ((new_s = accept(s, (struct sockaddr *)&sin, &addrlen)) < 0) {
+		if ((new_s = accept(listener, (struct sockaddr *)&myAddress, &addrlen)) < 0) {
 			perror("accept");
 			exit(1);
 		}
 
-		cout << "new connection from " << inet_ntoa(sin.sin_addr) << endl;
+		cout << "new connection from " << inet_ntoa(myAddress.sin_addr) << endl;
 	
 		while (len = recv(new_s, buf, sizeof(buf), 0)) {
 			//Parse the command.
@@ -93,7 +108,7 @@ int main(int argc, char **argv) {
 					strcat(returnMessage, messageManager.getNext());
 					break;
 				case MSGSTORE:
-					//Check is user is logged in
+					//Check if user is logged in
 					if (!userManager.loggedIn())
 					{
 						//if not logged in
