@@ -9,8 +9,8 @@ all: client server
 client: client.o 
 	$(CC) $(LDFLAGS) -o client client.o
  
-server: server.o MessageManager.o CommandProcessor.o UserManager.o ServerThread.o Thread.o
-	$(CC) $(LDFLAGS1) -o server Thread.o ServerThread.o MessageManager.o CommandProcessor.o UserManager.o server.o
+server: server.o MessageManager.o CommandProcessor.o UserManager.o ClientThread.o ServerThread.o Thread.o
+	$(CC) $(LDFLAGS1) -o server Thread.o ClientThread.o ServerThread.o MessageManager.o CommandProcessor.o UserManager.o server.o
 
 server.o: MessageManager.o
 

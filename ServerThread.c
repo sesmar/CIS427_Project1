@@ -8,6 +8,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+ServerThread::ServerThread(MessageManager &messageManager, UserManager &userManager)
+{
+	_userManager = userManager;
+	_messageManager = messageManager;
+}
+
 void ServerThread::InternalThreadEntry()
 {
 	//Server Address
@@ -62,6 +68,12 @@ void ServerThread::InternalThreadEntry()
 			cout << "New connection from " 
 				 << inet_ntoa(remoteAddress.sin_addr)
 				 << " socket " << newfd << endl;
+
+			ClientThread clientThread(_userManager, _messageManager);
+			clientThread.FD = newfd;
+
+			cout << "Starting Client Thread" << endl;
+			clientThread.start();
 		}
 	}
 

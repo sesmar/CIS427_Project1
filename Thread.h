@@ -6,7 +6,7 @@ class Thread
 {
 	public:
 			Thread() {}
-			virtual ~Thread() {}
+			//virtual ~Thread() {}
 			bool start();
 			void wait();
 
