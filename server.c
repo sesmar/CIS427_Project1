@@ -47,7 +47,9 @@ int main(int argc, char **argv) {
     UserManager userManager;
 	ServerThread serverThread;
 
-	serverThread.start(SERVER_PORT, MAX_PENDING);
+	serverThread.PORT = SERVER_PORT;
+	serverThread.PENDING = MAX_PENDING;
+	serverThread.start();
 
 	//load the message from file.
     messageManager.load("messages.txt");

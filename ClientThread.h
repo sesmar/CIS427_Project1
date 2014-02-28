@@ -3,15 +3,12 @@
 
 using namespace std;
 
-class ServerThread : public Thread
+class ClientThread : public Thread
 {
 	public:
-		int PORT;
-		int PENDING;
-		int listener;
-		int FD
+		int receiver;
+		int FD;
 
 	protected:
 		virtual void InternalThreadEntry();
-
-};
+}

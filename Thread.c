@@ -1,9 +1,7 @@
 #include "Thread.h"
 
-bool Thread::start(int port, int maxPending)
+bool Thread::start()
 {
-	_port = port;
-	_maxPending = maxPending;
 	return (pthread_create(&_thread, NULL, InternalThreadEntryFunc, this) == 0);
 }
 

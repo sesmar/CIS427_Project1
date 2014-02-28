@@ -29,7 +29,7 @@ void ServerThread::InternalThreadEntry()
 	//bind to address:port.
 	myAddress.sin_family = AF_INET;
 	myAddress.sin_addr.s_addr = INADDR_ANY;
-	myAddress.sin_port = htons(_port);
+	myAddress.sin_port = htons(PORT);
 	memset(&(myAddress.sin_zero), '\0', 8);
 
 	if (bind(listener, (struct sockaddr *)&myAddress, sizeof(myAddress)) < 0)
@@ -39,9 +39,30 @@ void ServerThread::InternalThreadEntry()
 	}
 
 	//start listening
-	if(listen(listener, _maxPending) < 0)
+	if(listen(listener, PENDING) < 0)
 	{
 		perror("listen");
 		exit(1);
 	}
+
+	cout << "Server is up, waiting for connections" << endl;
+
+	addrLen = sizeof(remoteAddress);
+
+	//main loop
+	for(;;) {
+		//handle a new connection
+		if ((newfd = accept(listener, (struct sockaddr*)&remoteAddress, &addrLen)) < 0)
+		{
+			perror("accept");
+			exit(1);
+		} 
+		else
+		{
+			cout << "New connection from " 
+				 << inet_ntoa(remoteAddress.sin_addr)
+				 << " socket " << newfd << endl;
+		}
+	}
+
 }
