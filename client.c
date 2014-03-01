@@ -18,10 +18,15 @@ using namespace std;
 
 #define SERVER_PORT 34352
 #define MAX_LINE 256
+#define STDIN 0
 
 int main(int argc, char * argv[]) {
 
-    struct sockaddr_in sin;
+    fd_set master;
+	fd_set read_fds;
+	int fdmax;
+
+	struct sockaddr_in sin;
     char buf[MAX_LINE];
     char rbuf[MAX_LINE];
     int len;
@@ -31,6 +36,9 @@ int main(int argc, char * argv[]) {
 		cout << "Usage: client <Server IP Address>" << endl;
 		exit(1);
     }
+
+	FD_ZERO(&master);
+	FD_ZERO(&read_fds);
 
     /* active open */
     if ((s = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -50,33 +58,50 @@ int main(int argc, char * argv[]) {
 		exit(1);
     }
 
-    cout << "c: ";
+	FD_SET(STDIN, &master);
+	FD_SET(s, &master);
+
+	fdmax = s;
 
     /* main loop; get and send lines of text */
-    while (fgets(buf, sizeof(buf), stdin)) {
-		buf[MAX_LINE -1] = '\0';
-		len = strlen(buf) + 1;
-		send (s, buf, len, 0);
-		recv (s, rbuf, sizeof(rbuf), 0);
+    while (1) {
+		read_fds = master;
+		
+		if (select(fdmax+1, &read_fds, NULL, NULL, NULL) < 0) {
+			perror("select");
+			exit(1);
+		}
+		
+		if (FD_ISSET(STDIN, &read_fds)){
 
-		cout << "s: " << rbuf;
-
-		string command(buf);
-		string output(rbuf);
-
-		//if the command was SHUTDOWN or QUIT
-		//and Response was 200 OK then exit program.
-		if ((command == "SHUTDOWN\n"
-			|| command == "QUIT\n")
-			&& output == "200 OK\n")
-		{
-			close(s);
-			return 0;
+			if (fgets(buf, sizeof(buf), stdin)) {
+				buf[MAX_LINE -1] = '\0';
+				len = strlen(buf) + 1;
+				send (s, buf, len, 0);
+			} else {
+				break;
+			}
 		}
 
+		if (FD_ISSET(s, &read_fds)) {
+			recv (s, rbuf, sizeof(rbuf), 0);
 
-		cout << "c: ";
-    }
+			cout << "s: " << rbuf;
 
-    close(s);
-} 
+			string command(buf);
+			string output(rbuf);
+
+			//if the command was SHUTDOWN or QUIT
+			//and Response was 200 OK then exit program.
+			if ((command == "SHUTDOWN\n"
+				|| command == "QUIT\n")
+				&& output == "200 OK\n")
+			{
+				close(s);
+				return 0;
+			}
+		}
+	}
+
+	close(s);
+}

@@ -26,6 +26,12 @@ void ServerThread::InternalThreadEntry()
 		exit(1);
 	}
 
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
+	{
+		perror("setsocketopt");
+		exit(1);
+	}
+
 	//bind to address:port.
 	myAddress.sin_family = AF_INET;
 	myAddress.sin_addr.s_addr = INADDR_ANY;
@@ -37,6 +43,9 @@ void ServerThread::InternalThreadEntry()
 		perror("bind");
 		exit(1);
 	}
+
+	FD_SET(listener, ClientThread::Master());
+	ClientThread::fdmax = listener;
 
 	//start listening
 	if(listen(listener, PENDING) < 0)
@@ -59,15 +68,24 @@ void ServerThread::InternalThreadEntry()
 		} 
 		else
 		{
+			//Add to master set
+			FD_SET(newfd, ClientThread::Master());
+
 			cout << "New connection from " 
 				 << inet_ntoa(remoteAddress.sin_addr)
 				 << " socket " << newfd << endl;
 
-			ClientThread clientThread;
-			clientThread.FD = newfd;
+			//Keep track of the maximum
+			if (newfd > ClientThread::fdmax)
+			{
+				ClientThread::fdmax = newfd;
+			}
+
+			ClientThread *clientThread = new ClientThread();
+			clientThread->FD = newfd;
 
 			cout << "Starting Client Thread" << endl;
-			clientThread.start();
+			clientThread->start();
 		}
 	}
 

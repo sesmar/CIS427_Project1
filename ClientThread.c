@@ -12,6 +12,21 @@
 #include <string.h>
 #include <unistd.h>
 
+fd_set* ClientThread::master = new fd_set();
+bool ClientThread::isMasterSet = false;
+int ClientThread::fdmax = 0;
+
+fd_set* ClientThread::Master()
+{
+	if (!isMasterSet)
+	{
+		isMasterSet = true;
+		FD_ZERO(master);
+	}
+
+	return master;
+}
+
 ClientThread::ClientThread()
 {
 }
@@ -26,7 +41,7 @@ void ClientThread::InternalThreadEntry()
     int i, j;
 
 	while(1) {
-		cout << "Waiting for input" << endl;
+		cout << FD << ": Waiting for input" << endl;
         // handle data from a client
         if ((nbytes = recv(FD, buf, sizeof(buf), 0)) <= 0) 
         {
@@ -38,7 +53,7 @@ void ClientThread::InternalThreadEntry()
                 perror("recv");
             }
             close(FD); // bye!
-            //FD_CLR(childSocket, &master); // remove from master set
+            FD_CLR(FD, ClientThread::Master()); // remove from master set
             pthread_exit(0);
         } 
         else 
@@ -109,16 +124,13 @@ void ClientThread::InternalThreadEntry()
 						{
 							///Shutdown the socket and exit program.
 							send(FD, returnMessage, strlen(returnMessage) + 1, 0);
-							cout << buf;
-							close(FD);
-							return;
 						}
 					}
 
 					strcpy(returnMessage, "402 User not allowed to execute this command\n");
 					break;
 				case QUIT:
-					//If user is logged in log them out and return 200 OK
+					//If user is logged in log then out and return 200 OK
 					if (UserManager::Current()->loggedIn())
 					{
 						UserManager::Current()->logout(UserManager::Current()->getUser()->UserName->c_str());
@@ -130,7 +142,7 @@ void ClientThread::InternalThreadEntry()
 
 			//Send response to the client.
 			send(FD, returnMessage, strlen(returnMessage) + 1, 0);
-			cout << buf;
+			cout << FD << ": " << buf;
             // we got some data from a client
             //cout << buf;
             //for(j = 0; j <= fdmax; j++) {
