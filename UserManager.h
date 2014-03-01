@@ -22,12 +22,14 @@ class User
 class UserManager
 {
 	private:
+		UserManager();
 		User *current_user;
 		bool logged_in;
+		static UserManager* _userManager;
 	public:
-		UserManager();
 		bool login(const char* userName, const char* password);
 		void logout(const char* userName);
 		User* getUser();
 		bool loggedIn();
+		static UserManager* Current();
 };

@@ -47,6 +47,18 @@ bool User::IsInRole(const char* role)
 	return false;
 }
 
+UserManager* UserManager::_userManager = NULL;
+
+UserManager* UserManager::Current()
+{
+	if (_userManager == NULL)
+	{
+		_userManager = new UserManager();
+	}
+
+	return _userManager;
+}
+
 ///
 //Constructor for User manager
 ///

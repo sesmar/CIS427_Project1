@@ -3,6 +3,18 @@
 #include <string.h>
 #include "MessageManager.h"
 
+MessageManager* MessageManager::_messageManager = NULL;
+
+MessageManager* MessageManager::Current()
+{
+	if (_messageManager == NULL)
+	{
+		_messageManager = new MessageManager();
+	}
+
+	return _messageManager;
+}
+
 ///
 //Constructor
 ///

@@ -9,11 +9,9 @@ class ClientThread : public Thread
 {
 	private:
 		CommandProcessor _commandProcessor;
-		UserManager _userManager;
-		MessageManager _messageManager;
 
 	public:
-		ClientThread(UserManager &userManager, MessageManager &messageManager);
+		ClientThread();
 		int receiver;
 		int FD;
 

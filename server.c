@@ -27,16 +27,10 @@ using namespace std;
 fd_set master;
 
 int main(int argc, char **argv) {
-
-    char returnMessage[MAX_LINE];
-    //Dependencies for off loading work.
-	MessageManager messageManager;
-    UserManager userManager;
-
 	//load the message from file.
-    messageManager.load("messages.txt");
+	MessageManager::Current()->load("messages.txt");
 
-	ServerThread serverThread(messageManager, userManager);
+	ServerThread serverThread;
 	
 	serverThread.PORT = SERVER_PORT;
 	serverThread.PENDING = MAX_PENDING;

@@ -13,13 +13,16 @@ using namespace std;
 class MessageManager
 {
 	private:
+		MessageManager();
 		int currentIndex;
 		vector<string> messages;
 		string file_name;
+		static MessageManager* _messageManager;
 
 	public:
-		MessageManager();
+		//MessageManager();
 		void load(const char *fileName);
 		const char* getNext();
 		void store(const char *message);
+		static MessageManager* Current();
 };
