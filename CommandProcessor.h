@@ -12,6 +12,7 @@ enum CommandKind
 	LOGOUT = 3,
 	SHUTDOWN = 4,
 	QUIT = 5,
+	WHO = 6,
 };
 
 ///

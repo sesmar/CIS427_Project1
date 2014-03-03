@@ -29,6 +29,7 @@ fd_set* ClientThread::Master()
 
 ClientThread::ClientThread()
 {
+	address = new string();
 }
 
 void ClientThread::InternalThreadEntry()
@@ -101,7 +102,7 @@ void ClientThread::InternalThreadEntry()
 					break;
 				case LOGIN:
 					//Grab the username/password and log the user in.
-					if (!UserManager::Current()->login(_commandProcessor.parameters[0].c_str(), _commandProcessor.parameters[1].c_str(), FD, ""))
+					if (!UserManager::Current()->login(_commandProcessor.parameters[0].c_str(), _commandProcessor.parameters[1].c_str(), FD, address->c_str()))
 					{
 						strcpy(returnMessage, "401 Wrong UserID or Password\n");
 					}
@@ -135,6 +136,14 @@ void ClientThread::InternalThreadEntry()
 					{
 						UserManager::Current()->logout(FD);
 					}
+					break;
+				case WHO:
+					string *message;
+
+				    message	= new string(returnMessage);
+					message->append(UserManager::Current()->getUserList());
+
+					strcpy(returnMessage, message->c_str());
 					break;
 				default:
 					break;

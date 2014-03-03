@@ -17,6 +17,7 @@ class ClientThread : public Thread
 		ClientThread();
 		int receiver;
 		int FD;
+		string *address;
 		static fd_set* Master();
 		static int fdmax;
 

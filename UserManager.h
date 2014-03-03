@@ -38,4 +38,5 @@ class UserManager
 		bool isLoggedIn(const char* userName);
 		bool isLoggedIn(int fd);
 		static UserManager* Current();
+		const char* getUserList();
 };

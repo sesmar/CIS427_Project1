@@ -191,3 +191,18 @@ bool UserManager::isLoggedIn(int fd)
 {
 	return (users.count(fd) > 0);
 }
+
+const char* UserManager::getUserList()
+{
+	string *userList = new string("");
+
+	for(map<int, User*>::iterator ii=users.begin(); ii!=users.end(); ++ii)
+	{
+		userList->append(ii->second->UserName->c_str());
+		userList->append(" ");
+		userList->append(ii->second->address->c_str());
+		userList->append("\n");
+	}
+
+	return userList->c_str();
+}

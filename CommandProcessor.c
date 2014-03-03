@@ -61,6 +61,11 @@ CommandKind CommandProcessor::parse(const char *command)
 		last_command = QUIT;
 		return QUIT;
 	}
+	else if (strcmp(command, "WHO\n") == 0)
+	{
+		last_command = WHO;
+		return WHO;
+	}
 	else if (last_command == MSGSTORE)
 	{
 		//if last command was MSGSTORE and new command is not 
