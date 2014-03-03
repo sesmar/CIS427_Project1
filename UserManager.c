@@ -13,12 +13,13 @@ User::User() {}
 //Parameter: user_name, the user name of the user.
 //Parameter: permission_string, the users permissions.
 ///
-User::User(const char* user_name, const char* permission_string)
+User::User(const char* user_name, const char* permission_string, int fd, const char* address_string)
 {
     
     this->permissions = new string(permission_string);
 	this->UserName = new string(user_name);
-    this->socket_number = -1;
+    this->FD = fd;
+	this->address = new string(address_string);
 }
 
 ///
@@ -64,8 +65,7 @@ UserManager* UserManager::Current()
 ///
 UserManager::UserManager() 
 {
-    this->current_user = new User("", "");
-    this->logged_in = false;
+
 }
 
 ///
@@ -76,7 +76,7 @@ UserManager::UserManager()
 ///
 //Output: true is successful; otherwise, false.
 ///
-bool UserManager::login(const char* userName, const char* password)
+bool UserManager::login(const char* userName, const char* password, int fd, const char* address)
 {
     string line;
     ifstream user_file("users.txt");
@@ -94,9 +94,9 @@ bool UserManager::login(const char* userName, const char* password)
 
 				if (linePassword == password)
 				{
-					const char* permissions = line.substr(line.find_last_of(" ") + 1, string::npos).c_str(); 
-					this->current_user =  new User(userName, permissions);
-					this->logged_in = true;
+					const char* permissions = line.substr(line.find_last_of(" ") + 1, string::npos).c_str();
+					User *user = new User(userName, permissions, fd, address);
+					users.insert(make_pair(fd, user));	
 					return true;
 				}
 			}
@@ -117,8 +117,30 @@ bool UserManager::login(const char* userName, const char* password)
 ///
 void UserManager::logout(const char* userName)
 {
-	delete this->current_user;
-	this->logged_in = false;
+	User *userToLogout;
+	bool found = false;
+
+	for (map<int, User*>::iterator ii=users.begin(); ii!=users.end(); ++ii){
+		if (strcmp(ii->second->UserName->c_str(), userName) == 0)
+		{
+			userToLogout = ii->second;
+			found = true;
+			break;
+		}
+	}
+
+	if (found)
+	{
+		users.erase(userToLogout->FD);
+		delete userToLogout;
+	}
+}
+
+void UserManager::logout(int fd)
+{
+	User *userToLogout = users[fd];
+	users.erase(fd);
+	delete userToLogout;
 }
 
 ///
@@ -126,9 +148,25 @@ void UserManager::logout(const char* userName)
 ///
 //Output: Reference to the currently logged in User
 ///
-User* UserManager::getUser()
+User* UserManager::getUser(int fd)
 {
-	return this->current_user;
+	return this->users[fd];
+}
+
+User* UserManager::getUser(const char* userName)
+{
+	User *user;
+	
+	for(map<int, User*>::iterator ii=users.begin(); ii!=users.end(); ++ii)
+	{
+		if (strcmp(ii->second->UserName->c_str(), userName) == 0)
+		{
+			user = ii->second;
+			break;
+		}
+	}
+
+	return user;
 }
 
 ///
@@ -136,7 +174,20 @@ User* UserManager::getUser()
 ///
 //Output: true if a user is currently logged in; otherwise, false.
 ///
-bool UserManager::loggedIn()
+bool UserManager::isLoggedIn(const char* userName)
 {
-	return this->logged_in;
+	for(map<int, User*>::iterator ii=users.begin(); ii!=users.end(); ++ii)
+	{
+		if (strcmp(ii->second->UserName->c_str(), userName) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool UserManager::isLoggedIn(int fd)
+{
+	return (users.count(fd) > 0);
 }

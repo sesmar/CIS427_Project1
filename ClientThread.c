@@ -78,7 +78,7 @@ void ClientThread::InternalThreadEntry()
 					break;
 				case MSGSTORE:
 					//Check if user is logged in
-					if (!UserManager::Current()->loggedIn())
+					if (!UserManager::Current()->isLoggedIn(FD))
 					{
 						//if not logged in
 						//Check the last command to set appropriate message
@@ -101,23 +101,23 @@ void ClientThread::InternalThreadEntry()
 					break;
 				case LOGIN:
 					//Grab the username/password and log the user in.
-					if (!UserManager::Current()->login(_commandProcessor.parameters[0].c_str(), _commandProcessor.parameters[1].c_str()))
+					if (!UserManager::Current()->login(_commandProcessor.parameters[0].c_str(), _commandProcessor.parameters[1].c_str(), FD, ""))
 					{
 						strcpy(returnMessage, "401 Wrong UserID or Password\n");
 					}
 					break;
 				case LOGOUT:
 					//If the user is logged in, log them out.
-					if (UserManager::Current()->loggedIn())
+					if (UserManager::Current()->isLoggedIn(FD))
 					{
-						UserManager::Current()->logout(UserManager::Current()->getUser()->UserName->c_str());
+						UserManager::Current()->logout(FD);
 					}
 					break;
 				case SHUTDOWN:
 					//Check if the user is logged in.
-					if (UserManager::Current()->loggedIn())
+					if (UserManager::Current()->isLoggedIn(FD))
 					{
-						User *currentUser = UserManager::Current()->getUser();
+						User *currentUser = UserManager::Current()->getUser(FD);
 
 						//If the user is logged in, check for root permission.
 						if (currentUser->IsInRole("root"))
@@ -131,9 +131,9 @@ void ClientThread::InternalThreadEntry()
 					break;
 				case QUIT:
 					//If user is logged in log then out and return 200 OK
-					if (UserManager::Current()->loggedIn())
+					if (UserManager::Current()->isLoggedIn(FD))
 					{
-						UserManager::Current()->logout(UserManager::Current()->getUser()->UserName->c_str());
+						UserManager::Current()->logout(FD);
 					}
 					break;
 				default:

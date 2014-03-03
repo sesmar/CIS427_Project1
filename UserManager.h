@@ -1,3 +1,6 @@
+#include <map>
+#include <string>
+
 using namespace std;
 
 ///
@@ -10,9 +13,10 @@ class User
 	public:
 		User();
 		~User();
-		User(const char* user_name, const char* permissions);
+		User(const char* user_name, const char* permissions, int fd, const char* address_string);
 		string *UserName;
-		int socket_number;
+		int FD;
+		string *address;
 		bool IsInRole(const char* role);
 };
 
@@ -23,13 +27,15 @@ class UserManager
 {
 	private:
 		UserManager();
-		User *current_user;
-		bool logged_in;
 		static UserManager* _userManager;
+		map<int, User*> users;
 	public:
-		bool login(const char* userName, const char* password);
+		bool login(const char* userName, const char* password, int fd, const char* addres);
 		void logout(const char* userName);
-		User* getUser();
-		bool loggedIn();
+		void logout(int fd);
+		User* getUser(const char* userName);
+		User* getUser(int fd);
+		bool isLoggedIn(const char* userName);
+		bool isLoggedIn(int fd);
 		static UserManager* Current();
 };
