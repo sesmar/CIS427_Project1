@@ -13,6 +13,7 @@ enum CommandKind
 	SHUTDOWN = 4,
 	QUIT = 5,
 	WHO = 6,
+	SEND = 7,
 };
 
 ///

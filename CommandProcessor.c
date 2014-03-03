@@ -66,14 +66,28 @@ CommandKind CommandProcessor::parse(const char *command)
 		last_command = WHO;
 		return WHO;
 	}
+	else if (strcmp(command, "SEND\n") == 0)
+	{
+		last_command = SEND;
+		return SEND;
+	}
 	else if (last_command == MSGSTORE)
 	{
 		//if last command was MSGSTORE and new command is not 
-		//one of the six known commands, assume this is the
+		//one of the eight known commands, assume this is the
 		//message to be stored, set last command to UNKNOWN
 		//and return MSGSTORE
 		last_command = UNKNOWN;
 		return MSGSTORE;
+	}
+	else if (last_command == SEND)
+	{
+		//if last command was SEND and new command is not
+		//one of the eight known commands, assume this is the
+		//message to be sent, set last command to UNKNOWN
+		//and return SEND
+		last_command = UNKNOWN;
+		return SEND;
 	}
 	else
 	{

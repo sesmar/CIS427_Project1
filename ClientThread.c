@@ -145,6 +145,9 @@ void ClientThread::InternalThreadEntry()
 
 					strcpy(returnMessage, message->c_str());
 					break;
+				case SEND:
+					
+					break;
 				default:
 					break;
 			}
