@@ -12,16 +12,22 @@ WHO			//C.M.S.
 SEND		//C.M.S.
 
 Files:
-server.c	//Server Implementation
-client.c	//Client Implementation
+server.c			///Server Implementation
+client.c			//Client Implementation
 CommandProcessor.h	//Manages parsing and tracking commands
 CommandProcessor.c	
 MessageManager.h	//Manages loading and storing messages
 MessageManager.c
 UserManager.h		//Manages users and login/logout
 UserManager.c
+ClientThread.h		//Contains logic for running the "Client" threads on the server
+ClientThread.c
+ServerThread.h		//The main server thread
+ServerThread.c
+Thread.h			//Base thread class
+Thread.c			
 messages.txt		//Massages file
-users.txt		//Users file with username, password, and permissions.
+users.txt			//Users file with username, password, and permissions.
 
 Known Bugs:
 

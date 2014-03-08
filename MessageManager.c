@@ -5,6 +5,11 @@
 
 MessageManager* MessageManager::_messageManager = NULL;
 
+///
+//Singleton for MessageManager
+///
+//Output: Returns a single reference to MessageManager
+///
 MessageManager* MessageManager::Current()
 {
 	if (_messageManager == NULL)

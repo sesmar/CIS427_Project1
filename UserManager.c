@@ -12,6 +12,8 @@ User::User() {}
 //Constructor
 //Parameter: user_name, the user name of the user.
 //Parameter: permission_string, the users permissions.
+//Parameter: fd, the file descriptor of the current thread for this user.
+//Parameter: address_string, the address this user is connected from.
 ///
 User::User(const char* user_name, const char* permission_string, int fd, const char* address_string)
 {
@@ -50,6 +52,11 @@ bool User::IsInRole(const char* role)
 
 UserManager* UserManager::_userManager = NULL;
 
+///
+//Singleton for UserManager
+///
+//Output: Returns a single reference to UserManager
+///
 UserManager* UserManager::Current()
 {
 	if (_userManager == NULL)
@@ -73,8 +80,10 @@ UserManager::UserManager()
 ///
 //Parameter: userName, the username to check for.
 //Parameter: password, the password to check against the userName
+//Parameter: fd, the file descriptor of the user loging in.
+//Paraemter: address, the address for this users connection
 ///
-//Output: true is successful; otherwise, false.
+//Output: true if successful; otherwise, false.
 ///
 bool UserManager::login(const char* userName, const char* password, int fd, const char* address)
 {
@@ -113,7 +122,7 @@ bool UserManager::login(const char* userName, const char* password, int fd, cons
 ///
 //Logs the userout.
 ///
-//Parameter: userName, not used at this time.
+//Parameter: userName, The user you want logged out.
 ///
 void UserManager::logout(const char* userName)
 {
@@ -136,6 +145,11 @@ void UserManager::logout(const char* userName)
 	}
 }
 
+///
+//Logs the userout
+///
+//Parameter: fd, the file descriptor for the user you want logged out.
+///
 void UserManager::logout(int fd)
 {
 	User *userToLogout = users[fd];
@@ -145,6 +159,8 @@ void UserManager::logout(int fd)
 
 ///
 //Get the currently logged in user.
+///
+//Parameter: fd, the file descriptor of the user.
 ///
 //Output: Reference to the currently logged in User
 ///
