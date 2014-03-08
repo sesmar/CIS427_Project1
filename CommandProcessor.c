@@ -19,8 +19,12 @@ CommandProcessor::CommandProcessor()
 ///
 CommandKind CommandProcessor::parse(const char *command)
 {
-	//clear the parameters from prior command
-	parameters.clear();
+	if (last_command != SEND)
+	{
+		//clear the parameters from prior command
+		parameters.clear();
+	}
+
 
 	if (strcmp(command, "MSGGET\n") == 0)
 	{
@@ -66,9 +70,15 @@ CommandKind CommandProcessor::parse(const char *command)
 		last_command = WHO;
 		return WHO;
 	}
-	else if (strcmp(command, "SEND\n") == 0)
+	else if (strncmp(command, "SEND", 4) == 0)
 	{
 		last_command = SEND;
+		string c(command);
+
+		int start = c.find(" ") + 1;
+		parameters.push_back(c.substr(start, (c.length() - start) - 1));
+
+
 		return SEND;
 	}
 	else if (last_command == MSGSTORE)

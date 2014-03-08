@@ -146,7 +146,38 @@ void ClientThread::InternalThreadEntry()
 					strcpy(returnMessage, message->c_str());
 					break;
 				case SEND:
-					
+					if (UserManager::Current()->isLoggedIn(FD))
+					{
+						//send the message
+						if (_commandProcessor.last_command == UNKNOWN
+						   && UserManager::Current()->isLoggedIn(_commandProcessor.parameters[0].c_str()))
+						{
+							User *user = UserManager::Current()->getUser(_commandProcessor.parameters[0].c_str());
+							User *sender = UserManager::Current()->getUser(FD);
+
+							string *message;
+						    message	= new string("200 OK you have a new message from ");
+							message->append(sender->UserName->c_str());
+							message->append("\n");
+							message->append(sender->UserName->c_str());
+							message->append(": ");
+							message->append(buf);
+							
+							send(user->FD, message->c_str(), strlen(message->c_str())+1, 0);
+						}
+						else
+						{
+							if (!UserManager::Current()->isLoggedIn(_commandProcessor.parameters[0].c_str()))
+							{
+								strcpy(returnMessage, "402 Either the user does not exists or is not logged in\n");
+							}
+						}
+				
+					}
+					else
+					{
+						strcpy(returnMessage, "401 You are not currently logged in, login first\n");
+					}	
 					break;
 				default:
 					break;
