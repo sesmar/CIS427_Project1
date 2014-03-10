@@ -93,9 +93,10 @@ int main(int argc, char * argv[]) {
 
 			//if the command was SHUTDOWN or QUIT
 			//and Response was 200 OK then exit program.
-			if ((command == "SHUTDOWN\n"
+			if (((command == "SHUTDOWN\n"
 				|| command == "QUIT\n")
 				&& output == "200 OK\n")
+				|| strncmp(rbuf, "210", 3) == 0)
 			{
 				close(s);
 				return 0;

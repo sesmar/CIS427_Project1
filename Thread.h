@@ -12,8 +12,8 @@ class Thread
 
 	protected:
 			virtual void InternalThreadEntry() = 0;
+			pthread_t _thread;
 
 	private:
 			static void* InternalThreadEntryFunc(void *This) { ((Thread*)This)->InternalThreadEntry(); return NULL; }
-			pthread_t _thread;
 };

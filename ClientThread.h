@@ -17,9 +17,11 @@ class ClientThread : public Thread
 		ClientThread();
 		int receiver;
 		int FD;
+		int ServerFD;
 		string *address;
 		static fd_set* Master();
 		static int fdmax;
+		static pthread_t SHUT_DOWN;
 
 	protected:
 		virtual void InternalThreadEntry();

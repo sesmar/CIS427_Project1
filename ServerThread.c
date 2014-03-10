@@ -83,6 +83,8 @@ void ServerThread::InternalThreadEntry()
 
 			ClientThread *clientThread = new ClientThread();
 			clientThread->FD = newfd;
+			clientThread->ServerFD = listener;
+			clientThread->SHUT_DOWN = _thread;
 			clientThread->address = new string(inet_ntoa(remoteAddress.sin_addr));
 
 			cout << "Starting Client Thread" << endl;

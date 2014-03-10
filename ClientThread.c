@@ -15,6 +15,7 @@
 fd_set* ClientThread::master = new fd_set();
 bool ClientThread::isMasterSet = false;
 int ClientThread::fdmax = 0;
+pthread_t ClientThread::SHUT_DOWN;
 
 fd_set* ClientThread::Master()
 {
@@ -123,8 +124,24 @@ void ClientThread::InternalThreadEntry()
 						//If the user is logged in, check for root permission.
 						if (currentUser->IsInRole("root"))
 						{
+
+							string *shutdownMessage;
+							shutdownMessage = new string("210 the server is about to shutdown ......\n");
+							for(int i = 0; i < ClientThread::fdmax; i++)
+							{
+
+								if (FD_ISSET(i, ClientThread::Master()))
+								{
+									if (i != FD && i != ServerFD)
+									{
+										send(i, shutdownMessage->c_str(), strlen(shutdownMessage->c_str()) + 1, 0);
+									}
+								}
+							}
+
 							///Shutdown the socket and exit program.
 							send(FD, returnMessage, strlen(returnMessage) + 1, 0);
+							pthread_cancel(ClientThread::SHUT_DOWN);
 						}
 					}
 
@@ -135,6 +152,7 @@ void ClientThread::InternalThreadEntry()
 					if (UserManager::Current()->isLoggedIn(FD))
 					{
 						UserManager::Current()->logout(FD);
+
 					}
 					break;
 				case WHO:
@@ -186,18 +204,6 @@ void ClientThread::InternalThreadEntry()
 			//Send response to the client.
 			send(FD, returnMessage, strlen(returnMessage) + 1, 0);
 			cout << FD << ": " << buf;
-            // we got some data from a client
-            //cout << buf;
-            //for(j = 0; j <= fdmax; j++) {
-            //    // send to everyone!
-            //    if (FD_ISSET(j, &master)) {
-            //        // except the listener and ourselves
-            //        if (j != listener && j != childSocket) {
-            //            if (send(j, buf, nbytes, 0) == -1) {
-            //                perror("send");
-            //            }
-            //        }
-            //   }
         }
     }
 }
